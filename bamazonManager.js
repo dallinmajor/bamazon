@@ -30,7 +30,7 @@ function askUser() {
             case "View Low Inventory":
                 lowInventory();
                 break;
-            case "Add to Inventory":
+            case "Restock":
                 addInventory();
                 break;
             case "Add New Product":
@@ -65,7 +65,7 @@ Product Id:  ${item.item_id}`)
 };
 
 function lowInventory() {
-    var query = "SELECT * FROM products WHERE stock_quantity > 5;";
+    var query = "SELECT * FROM products WHERE stock_quantity < 5;";
 
     console.log(`Items with quantities lower than 5
 ---------------------------`)
@@ -73,9 +73,12 @@ function lowInventory() {
     connection.query(query, function (err, res) {
 
         res.forEach(function (item) {
-            console.log(item.product_name);
+            console.log(`Name: ${item.product_name}
+Quantity: ${item.stock_quantity}
+id: ${item.item_id}
+-------------------------------`);
         })
-        console.log("-----------------------------");
+  
         want2Continue();
     })
     
@@ -119,7 +122,7 @@ function addInventory() {
         connection.query(query, function (err, res) {
             if (err) throw (err);
 
-            console.log(`${quantity} was successfully added!`);
+            console.log(`You added ${quantity} units to Id ${id}`);
             want2Continue();
         })
     })

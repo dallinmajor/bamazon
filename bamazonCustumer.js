@@ -32,7 +32,7 @@ Product Id:  ${item.item_id}`)
 function askUser() {
     inquirer.prompt([{
         type: "input",
-        message: "What is the Product Id of the item you woul like to buy?",
+        message: "What is the Product Id of the item you would like to buy?",
         name: "item",
         validate: function (input) {
             var isNum = parseFloat(input);
@@ -60,17 +60,18 @@ function askUser() {
         }
     }]).then(answers => {
         var id = answers.item;
-        var query = `SELECT stock_quantity FROM products WHERE item_id = ${id}`;
+        var query = `SELECT * FROM products WHERE item_id = ${id}`;
         var quantity = parseFloat(answers.quantity);
 
         connection.query(query, function (err, res) {
 
             var result = parseFloat(res[0].stock_quantity)
-
+            var itemName = res[0].product_name;
             if (result < quantity) {
-                console.log("insufficent quantity!")
+                console.log("insufficent quantity!");
+                askUser();
             } else {
-                updateInventory(quantity, id);
+                updateInventory(quantity, id,itemName);
             }
         })
     })
@@ -95,12 +96,12 @@ function want2Continue() {
     })
 };
 
-function updateInventory(quan, id) {
+function updateInventory(quan,id,name) {
     var secondQuery = `UPDATE products SET stock_quantity = stock_quantity - ${quan} WHERE item_id = ${id};`;
 
     connection.query(secondQuery, function (err, res) {
         if (err) throw (err);
-        console.log("Successful purchase!")
+        console.log(`You have successfully purchased ${quan} units of ${name}!`)
         want2Continue();
     })
 }
